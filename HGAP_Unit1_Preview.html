@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HGAP Unit 1 Preview</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 12px 30px rgba(0,0,0,0.28);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background: linear-gradient(180deg, #020617 0%, #0f172a 100%); color: var(--text); }
+    a { color: var(--accent); }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .btn-primary { background: var(--accent); color: #062033; }
+    .btn-secondary { background: #334155; color: white; }
+    .btn-success { background: var(--accent-2); color: #06240d; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: #291700; }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .hero {
+      min-height: calc(100vh - 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero-card, .panel {
+      background: rgba(17,24,39,0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      width: min(900px, 100%);
+      padding: 52px 28px;
+    }
+
+    .hero-card h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+    }
+
+    .hero-card p {
+      max-width: 700px;
+      margin: 0 auto 24px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    .topics-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .topic-card {
+      padding: 20px;
+      background: rgba(17,24,39,0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .topic-card h3 { margin: 0; font-size: 1.2rem; }
+    .topic-card p { margin: 0; color: var(--muted); line-height: 1.5; min-height: 72px; }
+
+    .topic-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+    }
+
+    .sidebar h2, .content h2, .content h3 { margin-top: 0; }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0 0;
+    }
+
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      background: #1e293b;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+    }
+
+    .nav-item.active {
+      border-color: var(--accent);
+      background: #0f2740;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .module {
+      background: rgba(31,41,55,0.55);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .placeholder {
+      border: 2px dashed rgba(148,163,184,0.45);
+      border-radius: 14px;
+      padding: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      background: rgba(15,23,42,0.4);
+      white-space: pre-wrap;
+    }
+
+    .flashcard-box {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flashcard {
+      min-height: 180px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #172554, #0f172a);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tiny-note {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .quiz-question {
+      margin-bottom: 16px;
+      padding: 16px;
+      background: rgba(15,23,42,0.55);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-btn {
+      text-align: left;
+      background: #1e293b;
+      color: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid transparent;
+    }
+
+    .feedback {
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .correct { color: #4ade80; }
+    .incorrect { color: #f87171; }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(56,189,248,0.18);
+      border: 1px solid rgba(56,189,248,0.3);
+      color: #bae6fd;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .topic-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section id="landingScreen" class="screen active hero">
+      <div class="hero-card">
+        <div class="badge">Preview Build</div>
+        <h1>HGAP Unit 1 Preview</h1>
+        <p>
+          This is a starter preview for your course-style Unit 1 website.
+          Your friends can click through topics, open each section, test flashcards,
+          open a podcast link, read a study guide area, and take a quiz.
+        </p>
+        <button class="btn-primary" onclick="showTopics()">Get Started</button>
+      </div>
+    </section>
+
+    <section id="topicsScreen" class="screen">
+      <div class="topics-header">
+        <div>
+          <div class="badge">All 7 Topics</div>
+          <h1 style="margin: 0 0 8px;">Choose a Topic</h1>
+          <p style="margin: 0; color: var(--muted);">These are placeholder topic cards for now. You can rename every topic later.</p>
+        </div>
+        <button class="btn-secondary" onclick="showLanding()">Back</button>
+      </div>
+      <div id="topicsGrid" class="topics-grid"></div>
+    </section>
+
+    <section id="topicScreen" class="screen">
+      <div class="topic-layout">
+        <aside class="sidebar panel">
+          <div class="badge" id="topicBadge">Topic 1</div>
+          <h2 id="topicTitle">Topic Title</h2>
+          <p id="topicShort" class="tiny-note">Short topic summary goes here.</p>
+          <div class="nav-list">
+            <button class="nav-item active" data-module="podcast" onclick="scrollToModule('podcast', this)">Podcast</button>
+            <button class="nav-item" data-module="flashcards" onclick="scrollToModule('flashcards', this)">Flashcards</button>
+            <button class="nav-item" data-module="studyguide" onclick="scrollToModule('studyguide', this)">Study Guide</button>
+            <button class="nav-item" data-module="quiz" onclick="scrollToModule('quiz', this)">Quiz</button>
+          </div>
+        </aside>
+
+        <main class="content panel">
+          <div class="badge">Course Layout Preview</div>
+          <h2 id="mainTopicHeading">Topic Title</h2>
+
+          <div class="module">
+            <h3>Topic Overview</h3>
+            <div id="topicOverview" class="placeholder"></div>
+          </div>
+
+          <div id="podcast" class="module">
+            <h3>1. Podcast</h3>
+            <p class="tiny-note">You said you want to use a normal link for the podcast. This button is already ready for that.</p>
+            <div class="placeholder" id="podcastPlaceholder"></div>
+            <div class="controls" style="margin-top: 14px;">
+              <a id="podcastLink" href="#" target="_blank" rel="noopener noreferrer">
+                <button class="btn-primary" type="button">Open Podcast Link</button>
+              </a>
+            </div>
+          </div>
+
+          <div id="flashcards" class="module">
+            <h3>2. Flashcards</h3>
+            <div class="flashcard-box">
+              <div id="flashcardText" class="flashcard">Flashcard question side placeholder</div>
+              <div class="controls">
+                <button class="btn-secondary" onclick="flipFlashcard()">Flip</button>
+                <button class="btn-success" onclick="markFlashcard('Right')">Right</button>
+                <button class="btn-danger" onclick="markFlashcard('Wrong')">Wrong</button>
+                <button class="btn-warning" onclick="shuffleFlashcards()">Shuffle</button>
+                <button class="btn-primary" onclick="nextFlashcard()">Next</button>
+              </div>
+              <div id="flashcardStatus" class="tiny-note">Status: Not answered yet.</div>
+            </div>
+          </div>
+
+          <div id="studyguide" class="module">
+            <h3>3. Study Guide</h3>
+            <div id="studyGuideText" class="placeholder"></div>
+          </div>
+
+          <div id="quiz" class="module">
+            <h3>4. Quiz</h3>
+            <div id="quizContainer"></div>
+          </div>
+
+          <div class="footer-nav">
+            <button class="btn-secondary" onclick="goBackFromTopic()">Back</button>
+            <button class="btn-primary" onclick="goNextTopic()">Go Next</button>
+          </div>
+        </main>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const topics = [
+      {
+        title: 'Topic 1',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 1.\n\nThis area is meant for the full explanation of what the topic is about before students start the podcast, flashcards, study guide, and quiz.',
+        podcastText: 'PLACEHOLDER: Put your podcast notes or short instructions here. Then replace the link below with your real podcast link.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste your Topic 1 study guide here word for word.\n\nYou said you want the final study guide to be organized and to use your exact wording. This box is ready for that.',
+        flashcards: [
+          { front: 'Topic 1 flashcard 1 question', back: 'Topic 1 flashcard 1 answer' },
+          { front: 'Topic 1 flashcard 2 question', back: 'Topic 1 flashcard 2 answer' },
+          { front: 'Topic 1 flashcard 3 question', back: 'Topic 1 flashcard 3 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 1 sample quiz question 1?', options: ['Answer A', 'Answer B', 'Answer C', 'Answer D'], correct: 1 },
+          { question: 'Topic 1 sample quiz question 2?', options: ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4'], correct: 2 }
+        ]
+      },
+      {
+        title: 'Topic 2',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 2.',
+        podcastText: 'PLACEHOLDER: Add Topic 2 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 2 study guide here.',
+        flashcards: [
+          { front: 'Topic 2 flashcard 1 question', back: 'Topic 2 flashcard 1 answer' },
+          { front: 'Topic 2 flashcard 2 question', back: 'Topic 2 flashcard 2 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 2 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 0 }
+        ]
+      },
+      {
+        title: 'Topic 3',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 3.',
+        podcastText: 'PLACEHOLDER: Add Topic 3 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 3 study guide here.',
+        flashcards: [
+          { front: 'Topic 3 flashcard 1 question', back: 'Topic 3 flashcard 1 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 3 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 3 }
+        ]
+      },
+      {
+        title: 'Topic 4',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 4.',
+        podcastText: 'PLACEHOLDER: Add Topic 4 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 4 study guide here.',
+        flashcards: [
+          { front: 'Topic 4 flashcard 1 question', back: 'Topic 4 flashcard 1 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 4 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 0 }
+        ]
+      },
+      {
+        title: 'Topic 5',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 5.',
+        podcastText: 'PLACEHOLDER: Add Topic 5 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 5 study guide here.',
+        flashcards: [
+          { front: 'Topic 5 flashcard 1 question', back: 'Topic 5 flashcard 1 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 5 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 1 }
+        ]
+      },
+      {
+        title: 'Topic 6',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 6.',
+        podcastText: 'PLACEHOLDER: Add Topic 6 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 6 study guide here.',
+        flashcards: [
+          { front: 'Topic 6 flashcard 1 question', back: 'Topic 6 flashcard 1 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 6 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 2 }
+        ]
+      },
+      {
+        title: 'Topic 7',
+        short: 'Replace this with the real topic name later.',
+        overview: 'PLACEHOLDER: Paste your 2 long intro paragraphs here for Topic 7.',
+        podcastText: 'PLACEHOLDER: Add Topic 7 podcast info here.',
+        podcastUrl: '#',
+        studyGuide: 'PLACEHOLDER: Paste Topic 7 study guide here.',
+        flashcards: [
+          { front: 'Topic 7 flashcard 1 question', back: 'Topic 7 flashcard 1 answer' }
+        ],
+        quiz: [
+          { question: 'Topic 7 sample quiz question?', options: ['A', 'B', 'C', 'D'], correct: 3 }
+        ]
+      }
+    ];
+
+    let currentTopicIndex = 0;
+    let flashcards = [];
+    let currentFlashcardIndex = 0;
+    let showingBack = false;
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showLanding() { showScreen('landingScreen'); }
+    function showTopics() { showScreen('topicsScreen'); }
+
+    function renderTopics() {
+      const grid = document.getElementById('topicsGrid');
+      grid.innerHTML = '';
+      topics.forEach((topic, index) => {
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.innerHTML = `
+          <div class="badge">Topic ${index + 1}</div>
+          <h3>${topic.title}</h3>
+          <p>${topic.short}</p>
+          <button class="btn-primary" onclick="openTopic(${index})">Get Started</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openTopic(index) {
+      currentTopicIndex = index;
+      const topic = topics[index];
+
+      document.getElementById('topicBadge').textContent = `Topic ${index + 1}`;
+      document.getElementById('topicTitle').textContent = topic.title;
+      document.getElementById('mainTopicHeading').textContent = topic.title;
+      document.getElementById('topicShort').textContent = topic.short;
+      document.getElementById('topicOverview').textContent = topic.overview;
+      document.getElementById('podcastPlaceholder').textContent = topic.podcastText;
+      document.getElementById('studyGuideText').textContent = topic.studyGuide;
+
+      const podcastLink = document.getElementById('podcastLink');
+      podcastLink.href = topic.podcastUrl || '#';
+
+      flashcards = [...topic.flashcards];
+      currentFlashcardIndex = 0;
+      showingBack = false;
+      updateFlashcard();
+
+      renderQuiz(topic.quiz);
+      setActiveNavButton('podcast');
+      showScreen('topicScreen');
+    }
+
+    function updateFlashcard() {
+      const box = document.getElementById('flashcardText');
+      const status = document.getElementById('flashcardStatus');
+      if (!flashcards.length) {
+        box.textContent = 'No flashcards added yet.';
+        status.textContent = 'Status: Waiting for flashcards.';
+        return;
+      }
+      const card = flashcards[currentFlashcardIndex];
+      box.textContent = showingBack ? card.back : card.front;
+      status.textContent = `Card ${currentFlashcardIndex + 1} of ${flashcards.length} | Showing: ${showingBack ? 'Answer side' : 'Question side'}`;
+    }
+
+    function flipFlashcard() {
+      showingBack = !showingBack;
+      updateFlashcard();
+    }
+
+    function markFlashcard(result) {
+      const status = document.getElementById('flashcardStatus');
+      status.textContent = `Card ${currentFlashcardIndex + 1} of ${flashcards.length} | Marked: ${result}`;
+    }
+
+    function shuffleFlashcards() {
+      for (let i = flashcards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+      }
+      currentFlashcardIndex = 0;
+      showingBack = false;
+      updateFlashcard();
+      document.getElementById('flashcardStatus').textContent += ' | Deck shuffled';
+    }
+
+    function nextFlashcard() {
+      if (!flashcards.length) return;
+      currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.length;
+      showingBack = false;
+      updateFlashcard();
+    }
+
+    function renderQuiz(questions) {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      if (!questions.length) {
+        container.innerHTML = '<div class="placeholder">No quiz questions added yet.</div>';
+        return;
+      }
+
+      questions.forEach((q, qIndex) => {
+        const block = document.createElement('div');
+        block.className = 'quiz-question';
+
+        const question = document.createElement('div');
+        question.innerHTML = `<strong>Question ${qIndex + 1}:</strong> ${q.question}`;
+        block.appendChild(question);
+
+        const options = document.createElement('div');
+        options.className = 'options';
+
+        q.options.forEach((option, oIndex) => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.textContent = option;
+          btn.onclick = () => checkAnswer(qIndex, oIndex, q.correct, btn, feedback);
+          options.appendChild(btn);
+        });
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback';
+        feedback.textContent = 'Pick an answer.';
+
+        block.appendChild(options);
+        block.appendChild(feedback);
+        container.appendChild(block);
+      });
+    }
+
+    function checkAnswer(questionIndex, selectedIndex, correctIndex, clickedButton, feedbackElement) {
+      const questionBox = clickedButton.closest('.quiz-question');
+      questionBox.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+      if (selectedIndex === correctIndex) {
+        feedbackElement.textContent = 'Correct!';
+        feedbackElement.className = 'feedback correct';
+      } else {
+        feedbackElement.textContent = `Wrong. Correct answer: ${questionBox.querySelectorAll('.option-btn')[correctIndex].textContent}`;
+        feedbackElement.className = 'feedback incorrect';
+      }
+    }
+
+    function goBackFromTopic() {
+      showTopics();
+    }
+
+    function goNextTopic() {
+      const nextIndex = (currentTopicIndex + 1) % topics.length;
+      openTopic(nextIndex);
+    }
+
+    function scrollToModule(moduleId, btn) {
+      document.getElementById(moduleId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveNavButton(moduleId);
+    }
+
+    function setActiveNavButton(moduleId) {
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.module === moduleId);
+      });
+    }
+
+    renderTopics();
+  </script>
+</body>
+</html>
